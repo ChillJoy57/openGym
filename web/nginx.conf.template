@@ -20,7 +20,7 @@ server {
     # API → backend container.
     location ^~ ${BASE_PATH}/api/ {
         client_max_body_size 5m;
-        proxy_pass http://127.0.0.1:${PORT}$api_request_uri;
+        proxy_pass http://127.0.0.1:${BACKEND_PORT}$api_request_uri;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -29,6 +29,9 @@ server {
         proxy_set_header CF-Connecting-IP "${CF_CONNECTING_IP}";
         proxy_read_timeout 300s;
         proxy_send_timeout 300s;
+        proxy_buffer_size 128k;
+        proxy_buffers 4 256k;
+        proxy_busy_buffers_size 256k;
     }
 
     # Photos and videos of custom exercises (PUT and GET under api/media/).
@@ -38,13 +41,16 @@ server {
         proxy_buffering off;
         proxy_read_timeout 300s;
         proxy_send_timeout 300s;
-        proxy_pass http://127.0.0.1:${PORT}$api_request_uri;
+        proxy_pass http://127.0.0.1:${BACKEND_PORT}$api_request_uri;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header CF-Connecting-IP "${CF_CONNECTING_IP}";
+        proxy_buffer_size 128k;
+        proxy_buffers 4 256k;
+        proxy_busy_buffers_size 256k;
     }
 
     location ${BASE_PATH}/ {
